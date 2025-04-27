@@ -73,9 +73,77 @@ const handleClearCart = () => {
   showClearCartDialog.value = false
 }
 
+import jsPDF from 'jspdf'
+
 const checkout = () => {
-  // Add checkout logic here
+  const doc = new jsPDF({ unit: 'mm', format: 'a5' })
+  let y = 15
+  doc.setFontSize(22)
+  doc.setFontSize(16)
+  doc.text('SNIA PHOTO STUDIO',75, y, { align: 'center' })
+  doc.setFontSize(10)
+  y += 6
+  doc.text('Jl. Kodiklat TNI no 174, Buaran, Tangerang Selatan', 75, y, { align: 'center' })
+  y += 5
+  doc.text('Banten', 75, y, { align: 'center' })
+  y += 5
+  doc.text('No. Telp 08815344795', 75, y, { align: 'center' })
+  y += 6
+  doc.line(10, y, 140, y)
+  y += 6
+  // Tanggal & jam sesuai waktu checkout
+  const now = new Date()
+  const pad = (n: number) => n.toString().padStart(2, '0')
+  const tanggal = `${pad(now.getDate())}-${pad(now.getMonth()+1)}-${pad(now.getFullYear())}`
+  const jam = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+  doc.text(tanggal, 20, y, { align: 'left', maxWidth: 35 })
+  doc.text('SNIA PHOTO', 125, y, { align: 'right', maxWidth: 35 })
+  y += 6
+  doc.text(jam, 20, y, { align: 'left', maxWidth: 35 })
+  doc.text('No.01', 125, y, { align: 'right', maxWidth: 35 })
+  y += 4
+  // Garis tengah sejajar
+  doc.line(10, y, 140, y)
+  y += 7
+
+  // Product list dari cart
+  let totalQty = 0
+  items.value.forEach((item, idx) => {
+    doc.setFont('helvetica', 'bold')
+    doc.text(`${idx + 1}. ${item.product.category + ' - ' + item.product.name}`, 20, y)
+    doc.setFont('helvetica', 'normal')
+    y += 5
+    doc.text(`${item.quantity} x ${item.product.price.toLocaleString('id-ID')}`, 32, y)
+    doc.text('Rp ' + (item.product.price * item.quantity).toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
+    y += 6
+    totalQty += item.quantity
+  })
+  y += 2
+  doc.line(10, y, 140, y)
+  y += 10
+  doc.text('Sub Total', 80, y)
+  doc.text('Rp ' + totalPrice.value.toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
+  y += 6
+  doc.setFont('helvetica', 'bold')
+  doc.text('Total', 80, y)
+  doc.text('Rp ' + totalPrice.value.toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
+  doc.setFont('helvetica', 'normal')
+  y += 6
+  doc.text('Bayar (Cash)', 80, y)
+  doc.text('Rp ' + totalPrice.value.toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
+  y += 6
+  doc.text('Kembali', 80, y)
+  doc.text('Rp 0', 125 , y, { align: 'right', maxWidth: 35 })
+  y += 10
+  doc.setFontSize(12)
+  y += 10
+  doc.text('Terimakasih Telah Berbelanja', 75, y, { align: 'center' })
+  y += 8
+  doc.setFontSize(10)
+  doc.save(`struk-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`)
 }
+
+
 </script>
 
 <template>
@@ -111,7 +179,6 @@ const checkout = () => {
                 :key="item.product.id" 
                 class="align-center ma-4"
               >
-               
                 <v-col cols="12">
                   <div class="d-flex justify-space-between align-center">
                       <div>
