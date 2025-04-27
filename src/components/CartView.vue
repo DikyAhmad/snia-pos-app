@@ -168,7 +168,7 @@ const checkout = () => {
             Clear Cart
           </v-btn>
         </div>
-        <v-card>
+        <v-card elevation="3">
           <v-card-text class="pa-0">
             <v-sheet 
               class="overflow-y-auto" 
@@ -183,7 +183,7 @@ const checkout = () => {
                   <div class="d-flex justify-space-between align-center">
                       <div>
                       <div class="text-subtitle-1 font-weight-bold">
-                        {{ item.product.name + ' - ' + item.product.category }}
+                        {{ item.product.category + ' - ' + item.product.name }}
                       </div>
                       <div class="text-caption grey--text">
                         Rp {{ item.product.price.toLocaleString() }}

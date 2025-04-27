@@ -5,9 +5,11 @@ import ProductList from './components/ProductList.vue'
 import CartView from './components/CartView.vue'
 import { VApp, VMain, VContainer, VRow, VCol } from 'vuetify/components'
 import { useCartStore } from '@/stores/cart'
+import { useRoute } from 'vue-router'
 
 const cartStore = useCartStore()
 const isCartView = ref(false)
+const route = useRoute()
 
 const toggleView = () => {
   isCartView.value = !isCartView.value
@@ -32,16 +34,21 @@ onMounted(() => {
       @return-home="returnHome" 
     />
     <v-main class="overflow-hidden">
-      <v-container fluid class="pa-2">
-        <v-row v-if="!isCartView">
-          <ProductList />
-        </v-row>
-        <v-row v-else >
-          <v-col cols="12" sm="12" md="12" lg="8" class="mx-auto">
-            <CartView />
-          </v-col>
-        </v-row>
-      </v-container>
+      <template v-if="route.path === '/login' || route.path === '/edit'">
+        <router-view />
+      </template>
+      <template v-else>
+        <v-container fluid class="pa-2">
+          <v-row v-if="!isCartView">
+            <ProductList />
+          </v-row>
+          <v-row v-else >
+            <v-col cols="12" sm="12" md="12" lg="8" class="mx-auto">
+              <CartView />
+            </v-col>
+          </v-row>
+        </v-container>
+      </template>
     </v-main>
   </v-app>
 </template>

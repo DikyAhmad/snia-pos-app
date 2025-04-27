@@ -3,18 +3,33 @@ import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
 import { VAppBar, VAppBarTitle, VBtn, VIcon, VBadge } from 'vuetify/components'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 const emit = defineEmits(['toggle-cart', 'return-home'])
 
 const cartStore = useCartStore()
 const { totalItems } = storeToRefs(cartStore)
+const router = useRouter()
 
 const handleCartClick = () => {
+  router.push('/')
   emit('toggle-cart')
 }
 
 const handleTitleClick = () => {
+  router.push('/')
   emit('return-home')
+}
+
+import { supabase } from '@/lib/supabase'
+
+const goToLogin = async () => {
+  const { data } = await supabase.auth.getSession()
+  if (data.session) {
+    router.push('/edit')
+  } else {
+    router.push('/login')
+  }
 }
 </script>
 
@@ -28,6 +43,9 @@ const handleTitleClick = () => {
     </v-app-bar-title>
     
     <Popover class="relativ mr-4">
+      <v-btn icon class="mr-2 no-border" @click="goToLogin">
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
       <v-btn 
           icon 
           class="no-border"

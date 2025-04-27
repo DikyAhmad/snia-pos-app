@@ -92,7 +92,7 @@ onMounted(() => {
                 />
               </v-lazy>
               <v-card-title>{{ product.name }}</v-card-title>
-              <v-card-subtitle>
+              <v-card-subtitle class="mb-2">
                 Rp {{ product.price.toLocaleString() }}
               </v-card-subtitle>
             </v-card>
