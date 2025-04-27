@@ -82,13 +82,15 @@ onMounted(() => {
               hover
               class="cursor-pointer"
             >
-              <v-img 
-                :src="product.image" 
-                height="200" 
-                cover 
-                class="align-end"
-              >
-              </v-img>
+              <v-lazy :min-height="200" :options="{ threshold: 0.5 }">
+                <v-img 
+                  :src="product.image" 
+                  height="200" 
+                  cover 
+                  class="align-end"
+                  :style="{ backgroundColor: '#eeeeee' }"
+                />
+              </v-lazy>
               <v-card-title>{{ product.name }}</v-card-title>
               <v-card-subtitle>
                 Rp {{ product.price.toLocaleString() }}
