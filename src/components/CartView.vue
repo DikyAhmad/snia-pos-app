@@ -111,9 +111,21 @@ const checkout = () => {
                 :key="item.product.id" 
                 class="align-center ma-4"
               >
-                <v-col cols="12">
+                <v-col cols="3" class="d-flex align-center justify-center">
+                  <v-lazy :min-height="200" :options="{ threshold: 0.5 }" transition="fade-transition">
+                    <v-img
+                      :src="item.product.image"
+                      alt="{{ item.product.name }}"
+                      height="80"
+                      width="80"
+                      cover
+                      class="rounded"
+                    />
+                  </v-lazy>
+                </v-col>
+                <v-col cols="9">
                   <div class="d-flex justify-space-between align-center">
-                    <div>
+                      <div>
                       <div class="text-subtitle-1 font-weight-bold">
                         {{ item.product.name + ' - ' + item.product.category }}
                       </div>

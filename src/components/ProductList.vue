@@ -8,8 +8,8 @@ const cartStore = useCartStore()
 const productStore = useProductStore()
 const { products, loading, error } = storeToRefs(productStore)
 
-const categories = ['Album', 'Bingkai', 'Cetak Foto Glossy', 'Cetak Foto Silky', 'Semua']
-const selectedCategory = ref('Semua')
+const categories = ['Album', 'Bingkai', 'Cetak Foto Glossy', 'Cetak Foto Silky']
+const selectedCategory = ref('Cetak Foto Glossy')
 
 const filteredProducts = computed(() => {
   if (selectedCategory.value === 'Semua') return products.value
