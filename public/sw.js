@@ -52,24 +52,14 @@ self.addEventListener('fetch', event => {
   // Cache gambar (cache-first)
   if (request.destination === 'image') {
     event.respondWith(
-      caches.open(IMAGE_CACHE).then(async cache => {
-        const cachedResponse = await cache.match(request);
-        if (cachedResponse) return cachedResponse;
-        const networkResponse = await fetch(request);
-        // Only cache images < 500 KB
-        const contentLength = networkResponse.headers.get('content-length');
-        if (contentLength && parseInt(contentLength) > 500 * 1024) {
-          return networkResponse;
-        }
-        await cache.put(request, networkResponse.clone());
-        // Limit cache size to 50 images
-        const keys = await cache.keys();
-        if (keys.length > 50) {
-          await cache.delete(keys[0]); // Hapus gambar paling lama
-        }
+      caches.open(IMAGE_CACHE).then(cache =>
+        cache.match(request).then(response =>
+          response || fetch(request).then(networkResponse => {
+            cache.put(request, networkResponse.clone());
         return networkResponse;
       })
-    );
+        )
+      )    );
     return;
   }
 
