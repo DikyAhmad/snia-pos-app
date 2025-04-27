@@ -23,13 +23,23 @@ export const useProductStore = defineStore('product', {
       this.loading = true;
       this.error = null;
       if (navigator.onLine) {
-        // Online: fetch dari Supabase
+        // Ambil hash/etag produk terakhir yang disimpan
+        const lastHash = localStorage.getItem('products_hash');
+        // Fetch produk dari Supabase
         const { data, error } = await supabase.from('products').select('*');
         if (error) {
           this.error = error.message;
         } else {
-          this.products = data || [];
-          await saveProducts(this.products); // simpan ke IndexedDB
+          // Hitung hash sederhana dari data (bisa pakai JSON.stringify().length atau hash lain)
+          const newHash = data ? JSON.stringify(data).length.toString() : '';
+          if (newHash !== lastHash) {
+            this.products = data || [];
+            await saveProducts(this.products); // simpan ke IndexedDB
+            localStorage.setItem('products_hash', newHash);
+          } else {
+            // Tidak ada perubahan, ambil dari IndexedDB
+            this.products = await getProducts();
+          }
         }
       } else {
         // Offline: fetch dari IndexedDB
