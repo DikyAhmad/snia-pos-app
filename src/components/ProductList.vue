@@ -1,81 +1,28 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { supabase } from '@/lib/supabase'
 import { useCartStore } from '@/stores/cart'
-import { type Product } from '@/types/product'
+import { useProductStore } from '@/stores/product'
+import { storeToRefs } from 'pinia'
 
 const cartStore = useCartStore()
+const productStore = useProductStore()
+const { products, loading, error } = storeToRefs(productStore)
 
-const products = ref<Product[]>([])
-const loading = ref(false)
-const error = ref<string | null>(null)
-
-const categories = ['Album', 'Bingkai', 'Cetak Foto Glossy', 'Cetak Foto Silky']
-const selectedCategory = ref('Cetak Foto Glossy')
-
-const fetchProducts = async () => {
-  loading.value = true
-  error.value = null
-  try {
-    // Detailed error handling for Supabase query
-    const { data, error: fetchError } = await supabase
-      .from('products')
-      .select('id, name, price, category, image')
-      .order('id', { ascending: true })
-
-    // Handle potential errors
-    if (fetchError) {
-      console.error('Supabase fetch error:', fetchError)
-      error.value = `Gagal mengambil produk: ${fetchError.message}`
-      return
-    }
-
-    // Check if data exists and is an array
-    if (!Array.isArray(data)) {
-      console.warn('Received non-array data:', data)
-      error.value = 'Data produk tidak valid'
-      return
-    }
-
-    // Validate products with stricter type checking
-    const validProducts = data.filter(product => 
-      product && 
-      typeof product.id !== 'undefined' && 
-      product.name && 
-      typeof product.price === 'number' &&
-      product.image
-    )
-
-    if (validProducts.length === 0) {
-      console.warn('No valid products found')
-      error.value = 'Tidak ada produk valid'
-      return
-    }
-
-    // Set products
-    products.value = validProducts
-  } catch (err) {
-    console.error('Unexpected error in fetchProducts:', err)
-    error.value = err instanceof Error 
-      ? `Kesalahan: ${err.message}` 
-      : 'Terjadi kesalahan tidak terduga'
-  } finally {
-    loading.value = false
-  }
-}
+const categories = ['Album', 'Bingkai', 'Cetak Foto Glossy', 'Cetak Foto Silky', 'Semua']
+const selectedCategory = ref('Semua')
 
 const filteredProducts = computed(() => {
   if (selectedCategory.value === 'Semua') return products.value
   return products.value.filter(p => p.category === selectedCategory.value)
 })
 
-const addToCart = (product: Product) => {
+const addToCart = (product: any) => {
   cartStore.addToCart(product)
   cartStore.updateTotalItems()
 }
 
 onMounted(() => {
-  fetchProducts()
+  productStore.fetchProducts()
 })
 </script>
 

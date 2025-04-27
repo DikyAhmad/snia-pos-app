@@ -27,7 +27,7 @@ const handleTitleClick = () => {
       SNIA POS App
     </v-app-bar-title>
     
-    <Popover class="relative">
+    <Popover class="relativ mr-4">
       <v-btn 
           icon 
           class="no-border"

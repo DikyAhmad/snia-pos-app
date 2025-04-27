@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://snia-pos-app.vercel.app/sitemap.xml
