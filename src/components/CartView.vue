@@ -167,11 +167,33 @@ const handlePrint = async () => {
 }
 
 const generateReceiptPDF = async () => {
+  // Load logo image as base64
+  const logoUrl = '/logo-grayscale.png'
+  let logoImgData: string | null = null
+  try {
+    const response = await fetch(logoUrl)
+    const blob = await response.blob()
+    const reader = new FileReader()
+    logoImgData = await new Promise<string>((resolve, reject) => {
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+  } catch (e) {
+    logoImgData = null
+  }
   const doc = new jsPDF({ unit: 'mm', format: 'a5' })
   let y = 15
-  doc.setFontSize(22)
-  doc.setFontSize(16)
-  doc.text('SNIA PHOTO STUDIO',75, y, { align: 'center' })
+  // Add logo at top center (small, grayscale if possible)
+  if (logoImgData) {
+    doc.addImage(logoImgData, 'PNG', 65, 10, 20, 20, undefined, 'FAST')
+    y = 35
+  } else {
+    y += 10
+  }
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(18)
+  doc.text('SNIA PHOTO STUDIO', 75, y, { align: 'center' })
   doc.setFontSize(10)
   y += 6
   doc.text('Jl. Kodiklat TNI no 174, Buaran, Tangerang Selatan', 75, y, { align: 'center' })
@@ -223,8 +245,8 @@ const generateReceiptPDF = async () => {
   doc.text('Terimakasih Telah Berbelanja', 75, y, { align: 'center' })
   y += 8
   // Generate QR code from filename
-  const filename = `sniaphoto-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`
-  const filenameQR = `sniaphoto/${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}`
+  const filename = `sniaphoto-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth()+1)}${pad(now.getFullYear())}.pdf`
+  const filenameQR = `sniaphoto/${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth()+1)}${pad(now.getFullYear())}`
   try {
     const qrDataUrl = await QRCode.toDataURL(filenameQR, { margin: 1, width: 80 })
     doc.addImage(qrDataUrl, 'PNG', 55, y, 35, 35)
