@@ -1,4 +1,7 @@
 export default {
+  auth_warning_title: 'Access Denied',
+  auth_warning_message: 'You are not logged in as admin! Please log in first to print and upload the receipt.',
+  close: 'Close',
   category: 'Category',
   cart_empty: 'Cart is empty',
   no_products: 'No products found',
@@ -14,7 +17,6 @@ export default {
   add_product: 'Add Product',
   edit_product: 'Edit Product',
   save: 'Save',
-  close: 'Close',
   product_name: 'Product Name',
   price: 'Price',
   logout: 'Logout',

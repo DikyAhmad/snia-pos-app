@@ -165,7 +165,11 @@ const handleImageUpload = async (event: Event) => {
 const handleSearch = async () => {
   searchResult.value = null
   if (!searchQuery.value) return
-  const fileName = searchQuery.value.endsWith('.pdf') ? searchQuery.value : searchQuery.value + '.pdf'
+  let normalizedQuery = searchQuery.value
+  if (normalizedQuery.startsWith('sniaphoto/')) {
+    normalizedQuery = 'sniaphoto-' + normalizedQuery.slice('sniaphoto/'.length)
+  }
+  const fileName = normalizedQuery.endsWith('.pdf') ? normalizedQuery : normalizedQuery
   // Search in 'receipts' bucket, 'private' folder
   const { data, error } = await supabase.storage.from('receipts').list('private', { search: fileName })
   if (error) {
@@ -328,7 +332,7 @@ onBeforeUnmount(() => {
         <v-card class="mb-4">
           <v-card-title class="d-flex align-center justify-space-between">
             <span>Edit Products</span>
-            <v-btn icon color="error" @click="showEditTable = false" size="x-small" style="min-width:28px;height:28px;"><v-icon size="16">mdi-close</v-icon></v-btn>
+            <v-btn icon color="error" @click="showEditTable = false" size="x-small" style="min-width:28px;height:30px;"><v-icon size="16">mdi-close</v-icon></v-btn>
           </v-card-title>
           <v-data-table
             :headers="headers"
@@ -357,17 +361,17 @@ onBeforeUnmount(() => {
         <v-card class="mx-auto pa-4 d-flex flex-column justify-center mt-0" max-width="400" min-width="320" min-height="100" elevation="6">
           <v-card-title class="d-flex align-start" style="justify-content: start; position: relative; min-height: 40px;">
             <span style="font-weight:500;">Search Transaction</span>
-            <v-btn icon color="error" @click="showSearch = false" size="x-small" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);min-width:28px;height:28px;"><v-icon size="16">mdi-close</v-icon></v-btn>
+            <v-btn icon color="error" @click="showSearch = false" size="x-small" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);min-width:28px;height:30px;"><v-icon size="16">mdi-close</v-icon></v-btn>
           </v-card-title>
           <v-form @submit.prevent="handleSearch" class="pa-4">
   <v-text-field
     v-model="searchQuery"
-    label="Search PDF..."
+    label="Input transaction receipt..."
     outlined
     density="comfortable"
-    class="mb-3"
+    class="mb-0"
   />
-  <div class="d-flex align-center mb-2" style="gap: 8px;">
+  <div class="d-flex align-center justify-end mb-4" style="gap: 16px;">
   <v-btn
     icon
     color="primary"

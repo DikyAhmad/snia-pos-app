@@ -77,10 +77,14 @@ const handleClearCart = () => {
 
 import jsPDF from 'jspdf'
 import { supabase } from '@/lib/supabase'
+import QRCode from 'qrcode'
 
 // Function to upload PDF to Supabase Storage
-const uploadPdfToSupabase = async (pdf: { blob: Blob, filename: string }) => {
-  // Upload using supabase-js SDK
+const uploadPdfToSupabase = async (pdf: { blob?: Blob, filename?: string }) => {
+  if (!pdf || !pdf.blob || !pdf.filename) {
+    console.error('Invalid PDF object for upload:', pdf)
+    return
+  }
   try {
     // Upload to receipts/private/receipt-name.pdf
     const privatePath = `private/${pdf.filename}`
@@ -139,11 +143,16 @@ const handleCheckout = async () => {
   }
   showCheckoutDialog.value = false
   paymentError.value = ''
-  const pdfFile = generateReceiptPDF()
-  if (pdfFile) {
-    await uploadPdfToSupabase(pdfFile)
-    pdfFile.doc.save(pdfFile.filename)
-    cartStore.clearCart()
+  try {
+    const pdfFile = await generateReceiptPDF()
+    if (pdfFile && pdfFile.doc && pdfFile.filename) {
+      await uploadPdfToSupabase(pdfFile)
+      pdfFile.doc.save(pdfFile.filename)
+      cartStore.clearCart()
+    }
+  } catch (err) {
+    // Optionally, show an error message to the user
+    paymentError.value = 'Failed to generate or save PDF.'
   }
 }
 
@@ -157,7 +166,7 @@ const handlePrint = async () => {
   handleCheckout()
 }
 
-const generateReceiptPDF = () => {
+const generateReceiptPDF = async () => {
   const doc = new jsPDF({ unit: 'mm', format: 'a5' })
   let y = 15
   doc.setFontSize(22)
@@ -213,10 +222,20 @@ const generateReceiptPDF = () => {
   y += 10
   doc.text('Terimakasih Telah Berbelanja', 75, y, { align: 'center' })
   y += 8
+  // Generate QR code from filename
+  const filename = `sniaphoto-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`
+  const filenameQR = `sniaphoto/${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`
+  try {
+    const qrDataUrl = await QRCode.toDataURL(filenameQR, { margin: 1, width: 80 })
+    doc.addImage(qrDataUrl, 'PNG', 55, y, 35, 35)
+    y += 42
+  } catch (err) {
+    // QR generation failed, skip
+    y += 2
+  }
   doc.setFontSize(10)
   // Save to Blob instead of saving to disk
   const pdfBlob = doc.output('blob')
-  const filename = `struk-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`
   return { blob: pdfBlob, filename, doc }
 }
 </script>
@@ -224,15 +243,14 @@ const generateReceiptPDF = () => {
 <template>
   <v-dialog v-model="showAuthWarningDialog" max-width="400">
     <v-card>
-      <v-card-title class="text-h6">Access Denied</v-card-title>
+      <v-card-title class="text-h6 mx-4 mt-4">{{ t('auth_warning_title') }}</v-card-title>
       <v-card-text>
-        <v-alert type="warning" variant="tonal" class="mb-2">
-          You are not logged in as admin! Please log in first to print and upload the receipt.
+        <v-alert type="warning" variant="tonal">
+          {{ t('auth_warning_message') }}
         </v-alert>
       </v-card-text>
-      <v-card-actions>
-        <v-spacer/>
-        <v-btn color="primary" @click="showAuthWarningDialog = false">Close</v-btn>
+      <v-card-actions class="mx-4 mb-4">
+        <v-btn color="primary" @click="showAuthWarningDialog = false" class="">{{ t('close') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

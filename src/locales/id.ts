@@ -1,4 +1,7 @@
 export default {
+  auth_warning_title: 'Akses Ditolak',
+  auth_warning_message: 'Anda belum login sebagai admin! Silakan login terlebih dahulu untuk mencetak dan mengunggah struk.',
+  close: 'Tutup',
   category: 'Kategori',
   cart_empty: 'Keranjang kosong',
   no_products: 'Tidak ada produk ditemukan',
@@ -14,7 +17,6 @@ export default {
   add_product: 'Tambah Produk',
   edit_product: 'Edit Produk',
   save: 'Simpan',
-  close: 'Tutup',
   product_name: 'Nama Produk',
   price: 'Harga',
   logout: 'Keluar',
