@@ -29,6 +29,9 @@ importers:
       jspdf:
         specifier: ^3.0.1
         version: 3.0.1
+      jsqr:
+        specifier: ^1.4.0
+        version: 1.4.0
       pinia:
         specifier: ^3.0.2
         version: 3.0.2(typescript@5.8.3)(vue@3.5.13(typescript@5.8.3))
@@ -1759,6 +1762,9 @@ packages:
 
   jspdf@3.0.1:
     resolution: {integrity: sha512-qaGIxqxetdoNnFQQXxTKUD9/Z7AloLaw94fFsOiJMxbfYdBbrBuhWmbzI8TVjrw7s3jBY1PFHofBKMV/wZPapg==}
+
+  jsqr@1.4.0:
+    resolution: {integrity: sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==}
 
   kolorist@1.8.0:
     resolution: {integrity: sha512-Y+60/zizpJ3HRH8DCss+q95yr6145JXZo46OTpFvDZWLfRCE4qChOyk1b26nMaNpfHHgxagk9dXT5OP0Tfe+dQ==}
@@ -4380,6 +4386,8 @@ snapshots:
       core-js: 3.41.0
       dompurify: 3.2.5
       html2canvas: 1.4.1
+
+  jsqr@1.4.0: {}
 
   kolorist@1.8.0: {}
 
