@@ -167,7 +167,7 @@ const handleSearch = async () => {
   if (!searchQuery.value) return
   let normalizedQuery = searchQuery.value
   if (normalizedQuery.startsWith('sniaphoto/')) {
-    normalizedQuery = 'sniaphoto-' + normalizedQuery.slice('sniaphoto/'.length)
+    normalizedQuery = 'sniaphoto-' + normalizedQuery.slice('sniaphoto/'.length) + ".pdf"
   }
   const fileName = normalizedQuery.endsWith('.pdf') ? normalizedQuery : normalizedQuery
   // Search in 'receipts' bucket, 'private' folder

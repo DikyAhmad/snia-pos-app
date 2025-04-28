@@ -224,7 +224,7 @@ const generateReceiptPDF = async () => {
   y += 8
   // Generate QR code from filename
   const filename = `sniaphoto-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`
-  const filenameQR = `sniaphoto/${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`
+  const filenameQR = `sniaphoto/${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}`
   try {
     const qrDataUrl = await QRCode.toDataURL(filenameQR, { margin: 1, width: 80 })
     doc.addImage(qrDataUrl, 'PNG', 55, y, 35, 35)
