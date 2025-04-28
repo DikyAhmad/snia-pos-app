@@ -3,11 +3,13 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { VCard, VCardTitle, VCardText, VCardActions, VTextField, VBtn } from 'vuetify/components'
 import { supabase } from '@/lib/supabase'
+import { useLocale } from '@/composables/useLocale'
 
 const username = ref('')
 const password = ref('')
 const error = ref('')
 const router = useRouter()
+const { t } = useLocale()
 
 const handleLogin = async () => {
   if (!username.value || !password.value) {
@@ -30,10 +32,10 @@ const handleLogin = async () => {
 <template>
   <v-container class="d-flex align-center justify-center" style="height: 80vh;">
     <v-card class="mx-auto pa-6 d-flex flex-column justify-center" max-width="400" min-width="320" min-height="300" elevation="8">
-      <v-card-title class="text-center text-h5 mb-2">Admin</v-card-title>
+      <v-card-title class="text-center text-h5 mb-2">{{ t('admin') }}</v-card-title>
       <v-card-text>
-        <v-text-field label="Username" v-model="username" outlined density="comfortable" class="mb-3" />
-        <v-text-field label="Password" v-model="password" outlined density="comfortable" type="password" class="mb-3" />
+        <v-text-field :label="t('username')" v-model="username" outlined density="comfortable" class="mb-3" />
+        <v-text-field :label="t('password')" v-model="password" outlined density="comfortable" type="password" class="mb-3" />
         <div v-if="error" class="red--text text-caption mt-2">{{ error }}</div>
       </v-card-text>
       <div>
@@ -42,7 +44,7 @@ const handleLogin = async () => {
           block
           @click="handleLogin"
         >
-          Login
+          {{ t('login') }}
         </v-btn>
       </div>
     </v-card>

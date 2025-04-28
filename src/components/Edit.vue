@@ -3,10 +3,10 @@
     <v-row align="center" class="mx-auto" justify="space-between">
   <v-row cols="6" class="">
     <v-col cols="7" lg="6" class="d-flex justify-center">
-      <v-btn color="success"  @click="openAddProduct">Add Product</v-btn>
+      <v-btn color="success"  @click="openAddProduct">{{ t('add_product') }}</v-btn>
     </v-col>
     <v-col cols="4" lg="5" class="d-flex justify-center ms-4">
-      <v-btn color="primary" @click="handleLogout">Logout</v-btn>
+      <v-btn color="primary" @click="handleLogout">{{ t('logout') }}</v-btn>
     </v-col>
   </v-row>
 </v-row>
@@ -18,8 +18,8 @@
             :items="products"
             :loading="loading"
             class="elevation-2 custom-table-grey"
-            loading-text="Memuat data produk..."
-            no-data-text="Tidak ada produk ditemukan"
+            :loading-text="t('loading_products')"
+            :no-data-text="t('no_products')"
             item-value="id"
             hide-default-footer
             fixed-header
@@ -37,7 +37,7 @@
 
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
-              <v-card-title class="px-6 mt-4">{{ isAddMode ? 'Add Product' : 'Edit Produk' }}</v-card-title>
+              <v-card-title class="px-6 mt-4">{{ isAddMode ? t('add_product') : t('edit_product') }}</v-card-title>
               <v-card-text>
                 <v-form>
                   <v-select :items="categories" v-model="selectedProduct.category" label="Kategori" outlined></v-select>
@@ -48,8 +48,8 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="dialog = false">Tutup</v-btn>
-                <v-btn color="success" text @click="saveProduct">Save</v-btn>
+                <v-btn color="primary" text @click="dialog = false">{{ t('close') }}</v-btn>
+                <v-btn color="success" text @click="saveProduct">{{ t('save') }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -63,6 +63,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
+import { useLocale } from '@/composables/useLocale'
 
 const router = useRouter()
 const products = ref<any[]>([])
@@ -78,9 +79,10 @@ const categories = [
   'Cetak Foto Silky'
 ]
 
+const { t } = useLocale()
 const headers = [
-  { title: 'Nama Produk', value: 'displayName' },
-  { title: 'Harga', value: 'price' }
+  { title: t('product_name'), value: 'displayName' },
+  { title: t('price'), value: 'price' }
 ]
 
 const fetchProducts = async () => {

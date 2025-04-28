@@ -189,14 +189,14 @@ const generateReceiptPDF = () => {
     <v-row v-else justify-center align-center style="min-height: calc(100vh - 200px)">
       <v-col cols="12" sm="10" md="8" lg="12">
         <div class="d-flex justify-space-between align-center mb-4">
-          <h2 class="text-h5">Keranjang</h2>
+          <h2 class="text-h5">{{ t('cart') }}</h2>
           <v-btn 
             color="error" 
             variant="outlined"
             size="small"
             @click="confirmClearCart"
           >
-            Clear Cart
+            {{ t('clear_cart') }}
           </v-btn>
         </div>
         <v-card elevation="3">
@@ -279,7 +279,7 @@ const generateReceiptPDF = () => {
           color="primary"
           @click="openCheckoutDialog"
         >
-          Checkout
+          {{ t('pay_and_print') }}
         </v-btn>
       </div>
     </v-footer>
@@ -290,40 +290,42 @@ const generateReceiptPDF = () => {
     >
       <v-card>
         <v-card-title class="text-h6 text-center">
-          Empty Cart
-        </v-card-title>
+            {{ t('empty_cart') }}
+          </v-card-title>
         <v-card-text class="text-center">
-          Are you sure you want to empty your cart?
-        </v-card-text>
+            {{ t('empty_cart_confirm') }}
+          </v-card-text>
         <v-card-actions class="justify-center">
           <v-btn 
-            color="primary" 
-            @click="showClearCartDialog = false"
-            class="mr-2"
-          >
-            Cancel
-          </v-btn>
+              color="primary" 
+              @click="showClearCartDialog = false"
+              class="mr-2"
+            >
+              {{ t('cancel') }}
+            </v-btn>
           <v-btn 
-            color="error" 
-            variant="outlined"
-            @click="handleClearCart"
-          >
-            Delete
-          </v-btn>
+              color="error" 
+              variant="outlined"
+              @click="handleClearCart"
+            >
+              {{ t('delete') }}
+            </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
       <!-- Dialog Checkout -->
     <v-dialog v-model="showCheckoutDialog" max-width="400">
       <v-card>
-        <v-card-title class="text-h6 text-center">Checkout</v-card-title>
         <v-card-text>
+          <div class="d-flex justify-space-between align-center mb-2">
+            <span class="text-subtitle-1 font-weight-medium">{{ t('payment_method') }}</span>
+          </div>
           <v-radio-group v-model="paymentMethod" row>
-            <v-radio label="Cash" value="cash" />
+            <v-radio :label="t('cash')" value="cash" />
             <v-radio label="QRIS" value="qris" />
           </v-radio-group>
 
-          <div class="my-2">Jumlah Bayar:</div>
+          <div class="my-2">{{ t('payment_amount') }}:</div>
           <v-text-field
             v-model="paymentAmount"
             type="number"
@@ -337,17 +339,21 @@ const generateReceiptPDF = () => {
           />
           <div v-if="paymentError" class="red--text text-caption">{{ paymentError }}</div>
           <div class="d-flex justify-space-between mt-2">
-            <span>Total: </span>
+            <span>{{ t('total') }}: </span>
             <span>Rp {{ totalPrice.toLocaleString() }}</span>
           </div>
           <div class="d-flex justify-space-between mt-1">
-            <span>Kembali: </span>
+            <span>{{ t('payment_amount') }}:</span>
+            <span>Rp {{ paymentAmount.toLocaleString() }}</span>
+          </div>
+          <div class="d-flex justify-space-between mt-1">
+            <span>{{ t('change') }}:</span>
             <span>Rp {{ paymentMethod === 'qris' ? 0 : (paymentAmount - totalPrice).toLocaleString() }}</span>
           </div>
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn text @click="showCheckoutDialog = false">Batal</v-btn>
-          <v-btn color="primary" @click="handleCheckout">Bayar & Cetak</v-btn>
+          <v-btn text @click="showCheckoutDialog = false">{{ t('cancel') }}</v-btn>
+          <v-btn color="primary" @click="handleCheckout">{{ t('pay_and_print') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
