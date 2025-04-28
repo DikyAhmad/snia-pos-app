@@ -23,10 +23,17 @@ const handleTitleClick = () => {
 
 import { supabase } from '@/lib/supabase'
 
+import { useAdminPanelStore } from '@/stores/adminPanel'
+
 const goToLogin = async () => {
   const { data } = await supabase.auth.getSession()
+  const adminPanelStore = useAdminPanelStore()
   if (data.session) {
-    router.push('/edit')
+    // User is logged in, show admin panel directly
+    adminPanelStore.showPanel()
+    if (router.currentRoute.value.path !== '/login') {
+      router.push('/login')
+    }
   } else {
     router.push('/login')
   }

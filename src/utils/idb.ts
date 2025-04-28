@@ -18,7 +18,7 @@ export async function saveProducts(products: Product[]) {
   const db = await getDB();
   const tx = db.transaction(STORE_NAME, 'readwrite');
   for (const product of products) {
-    // Hindari DataCloneError: pastikan plain object
+    // Avoid DataCloneError: ensure plain object
     const plainProduct = JSON.parse(JSON.stringify(product));
     tx.store.put(plainProduct);
   }

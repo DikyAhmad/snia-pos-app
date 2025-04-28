@@ -19,12 +19,12 @@ const returnHome = () => {
   isCartView.value = false
 }
 
-// Optional: You can keep a subscription for other purposes if needed
 onMounted(() => {
   cartStore.$subscribe(() => {
     // Optional: Add any side effects if needed
   })
 })
+
 </script>
 
 <template>

@@ -22,7 +22,7 @@ export const useCartStore = defineStore('cart', () => {
   }
   loadCart()
 
-  // Simpan ke localStorage setiap kali items berubah
+  // Save to localStorage every time items change
   const saveCart = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value))
   }

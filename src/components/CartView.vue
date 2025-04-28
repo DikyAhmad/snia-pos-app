@@ -76,8 +76,29 @@ const handleClearCart = () => {
 }
 
 import jsPDF from 'jspdf'
+import { supabase } from '@/lib/supabase'
 
-// Dialog state dan data pembayaran
+// Function to upload PDF to Supabase Storage
+const uploadPdfToSupabase = async (pdf: { blob: Blob, filename: string }) => {
+  // Upload using supabase-js SDK
+  try {
+    // Upload to receipts/private/receipt-name.pdf
+    const privatePath = `private/${pdf.filename}`
+    const { data, error } = await supabase.storage.from('receipts').upload(privatePath, pdf.blob, {
+      cacheControl: '3600',
+      contentType: 'application/pdf',
+      upsert: false
+    })
+    if (error) {
+      console.error('Upload PDF failed (SDK):', error)
+    }
+  } catch (e) {
+    console.error('Upload PDF failed (SDK, exception):', e)
+  }
+}
+
+
+// Dialog state and payment data
 const showCheckoutDialog = ref(false)
 const paymentMethod = ref<'cash' | 'qris'>('cash')
 const paymentAmount = ref<number>(0)
@@ -95,9 +116,18 @@ const handlePaymentInput = (val: string) => {
   paymentAmount.value = isNaN(num) ? 0 : num
 }
 
-const handleCheckout = () => {
+// Warning dialog if not logged in
+const showAuthWarningDialog = ref(false)
+
+const handleCheckout = async () => {
+  // Check Supabase session
+  const { data } = await supabase.auth.getSession()
+  if (!data.session) {
+    showAuthWarningDialog.value = true
+    return
+  }
   if (paymentMethod.value === 'cash' && paymentAmount.value < totalPrice.value) {
-    paymentError.value = 'Jumlah pembayaran kurang dari total belanja.'
+    paymentError.value = 'Payment amount is less than the total purchase.'
     return
   }
   if (paymentMethod.value === 'qris') {
@@ -105,7 +135,12 @@ const handleCheckout = () => {
   }
   showCheckoutDialog.value = false
   paymentError.value = ''
-  generateReceiptPDF()
+  const pdfFile = generateReceiptPDF()
+  if (pdfFile) {
+    await uploadPdfToSupabase(pdfFile)
+    pdfFile.doc.save(pdfFile.filename)
+    cartStore.clearCart()
+  }
 }
 
 const generateReceiptPDF = () => {
@@ -124,22 +159,18 @@ const generateReceiptPDF = () => {
   y += 6
   doc.line(10, y, 140, y)
   y += 6
-  // Tanggal & jam sesuai waktu checkout
+  // Date and time based on checkout time
   const now = new Date()
   const pad = (n: number) => n.toString().padStart(2, '0')
-  const tanggal = `${pad(now.getDate())}-${pad(now.getMonth()+1)}-${pad(now.getFullYear())}`
-  const jam = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
-  doc.text(tanggal, 20, y, { align: 'left', maxWidth: 35 })
-  doc.text('SNIA PHOTO', 125, y, { align: 'right', maxWidth: 35 })
+  // Date on the left, SNIA PHOTO on the right
+  doc.text(`Tanggal: ${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`, 20, y, { align: 'left', maxWidth: 40 })
+  doc.text('SNIA PHOTO', 125, y, { align: 'right', maxWidth: 40 })
   y += 6
-  doc.text(jam, 20, y, { align: 'left', maxWidth: 35 })
-  doc.text('No.01', 125, y, { align: 'right', maxWidth: 35 })
-  y += 4
-  // Garis tengah sejajar
+  // Time on the left, empty on the right
+  doc.text(`Jam: ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`, 20, y, { align: 'left', maxWidth: 40 })
+  y += 3
   doc.line(10, y, 140, y)
-  y += 7
-
-  // Product list dari cart
+  y += 6
   let totalQty = 0
   items.value.forEach((item, idx) => {
     doc.setFont('helvetica', 'bold')
@@ -151,7 +182,6 @@ const generateReceiptPDF = () => {
     y += 6
     totalQty += item.quantity
   })
-  y += 2
   doc.line(10, y, 140, y)
   y += 10
   doc.setFont('helvetica', 'bold')
@@ -170,14 +200,29 @@ const generateReceiptPDF = () => {
   doc.text('Terimakasih Telah Berbelanja', 75, y, { align: 'center' })
   y += 8
   doc.setFontSize(10)
-  doc.save(`struk-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`)
+  // Save to Blob instead of saving to disk
+  const pdfBlob = doc.output('blob')
+  const filename = `struk-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`
+  return { blob: pdfBlob, filename, doc }
 }
-
-
-
 </script>
 
 <template>
+  <v-dialog v-model="showAuthWarningDialog" max-width="400">
+    <v-card>
+      <v-card-title class="text-h6">Access Denied</v-card-title>
+      <v-card-text>
+        <v-alert type="warning" variant="tonal" class="mb-2">
+          You are not logged in as admin! Please log in first to print and upload the receipt.
+        </v-alert>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer/>
+        <v-btn color="primary" @click="showAuthWarningDialog = false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
   <v-container fluid class="grey lighten-4">
     <v-row v-if="items.length === 0" class="justify-center align-center" style="height: 50vh;">
       <v-col cols="12" class="text-center">
