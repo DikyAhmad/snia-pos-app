@@ -34,7 +34,7 @@ onMounted(() => {
         <v-select
           v-model="selectedCategory"
           :items="categories"
-          label="Kategori"
+          label="Category"
           variant="outlined"
           density="comfortable"
           class="category-select"
@@ -61,7 +61,7 @@ onMounted(() => {
     <v-row v-else-if="products.length === 0">
       <v-col class="text-center">
         <v-alert type="info">
-          Tidak ada produk ditemukan
+          No products found
         </v-alert>
       </v-col>
     </v-row>

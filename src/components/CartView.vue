@@ -180,7 +180,7 @@ const generateReceiptPDF = () => {
     <v-row v-if="items.length === 0" class="justify-center align-center" style="height: 50vh;">
       <v-col cols="12" class="text-center">
         <v-icon size="large" class="mb-4">mdi-cart-off</v-icon>
-        <div class="text-h6 grey--text">Keranjang kosong</div>
+        <div class="text-h6 grey--text">Cart is empty</div>
       </v-col>
     </v-row>
 
