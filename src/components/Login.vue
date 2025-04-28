@@ -416,7 +416,7 @@ onBeforeUnmount(() => {
   <div v-if="searchResult">
     <div v-if="searchResult.found" class="mt-3 green--text">
       PDF found.
-      <a :href="searchResult.url" target="_blank" style="color:#388e3c;font-weight:bold;">Download PDF</a>
+      <a :href="searchResult.url" target="_blank" style="color:#388e3c;font-weight:bold;">See PDF</a>
     </div>
     <div v-else class="mt-3 red--text">PDF not found.</div>
   </div>
