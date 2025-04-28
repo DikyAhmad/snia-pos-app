@@ -111,6 +111,16 @@ const openCheckoutDialog = () => {
   showCheckoutDialog.value = true
 }
 
+// Print button in footer with login validation
+const handlePrintFooter = async () => {
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) {
+    showAuthWarningDialog.value = true;
+    return;
+  }
+  openCheckoutDialog();
+}
+
 const handlePaymentInput = (val: string) => {
   const num = parseInt(val.replace(/[^0-9]/g, ''), 10)
   paymentAmount.value = isNaN(num) ? 0 : num
@@ -120,12 +130,6 @@ const handlePaymentInput = (val: string) => {
 const showAuthWarningDialog = ref(false)
 
 const handleCheckout = async () => {
-  // Check Supabase session
-  const { data } = await supabase.auth.getSession()
-  if (!data.session) {
-    showAuthWarningDialog.value = true
-    return
-  }
   if (paymentMethod.value === 'cash' && paymentAmount.value < totalPrice.value) {
     paymentError.value = 'Payment amount is less than the total purchase.'
     return
@@ -141,6 +145,16 @@ const handleCheckout = async () => {
     pdfFile.doc.save(pdfFile.filename)
     cartStore.clearCart()
   }
+}
+
+// Handle print button with login validation
+const handlePrint = async () => {
+  const { data } = await supabase.auth.getSession()
+  if (!data.session) {
+    showAuthWarningDialog.value = true
+    return
+  }
+  handleCheckout()
 }
 
 const generateReceiptPDF = () => {
@@ -322,7 +336,7 @@ const generateReceiptPDF = () => {
       <div>
         <v-btn 
           color="primary"
-          @click="openCheckoutDialog"
+          @click="handlePrintFooter"
         >
           {{ t('pay_and_print') }}
         </v-btn>
@@ -398,7 +412,7 @@ const generateReceiptPDF = () => {
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn text @click="showCheckoutDialog = false">{{ t('cancel') }}</v-btn>
-          <v-btn color="primary" @click="handleCheckout">{{ t('pay_and_print') }}</v-btn>
+          <v-btn color="primary" @click="handlePrint">{{ t('pay_and_print') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

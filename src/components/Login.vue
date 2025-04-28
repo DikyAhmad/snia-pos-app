@@ -143,12 +143,20 @@ const saveProduct = async () => {
   }
 };
 const handleLogout = async () => {
-  await supabase.auth.signOut()
-  isLoggedIn.value = false
-  username.value = ''
-  password.value = ''
-  error.value = ''
-  adminPanelStore.hidePanel()
+  try {
+    await supabase.auth.signOut();
+  } catch (e: any) {
+    // Ignore 403 Forbidden error on logout
+    if (e?.status !== 403) {
+      console.error('Logout error:', e);
+    }
+  }
+  const { data } = await supabase.auth.getSession();
+  isLoggedIn.value = !!data.session;
+  username.value = '';
+  password.value = '';
+  error.value = '';
+  adminPanelStore.hidePanel();
 }
 
 watch(isLoggedIn, (val) => { if (val) fetchProducts() })
