@@ -34,6 +34,7 @@ const headers = [
 ]
 
 const searchQuery = ref('')
+const searchDisabled = ref(false)
 const searchResult = ref<null | { found: boolean; url?: string }> (null)
 
 // Barcode scan states
@@ -108,6 +109,8 @@ const scanCameraFrame = async () => {
       const code = jsQR(imageData.data, canvas.width, canvas.height)
       if (code && code.data) {
         searchQuery.value = code.data
+        searchDisabled.value = true
+        searchDisabled.value = true
         closeCameraDialog()
         return
       }
@@ -144,6 +147,7 @@ const handleImageUpload = async (event: Event) => {
       const code = jsQR(imageData.data, canvas.width, canvas.height)
       if (code && code.data) {
         searchQuery.value = code.data
+        searchDisabled.value = true
       } else {
         scanError.value = 'No barcode or QR code found.'
       }
@@ -361,11 +365,12 @@ onBeforeUnmount(() => {
         <v-card class="mx-auto pa-4 d-flex flex-column justify-center mt-0" max-width="400" min-width="320" min-height="100" elevation="6">
           <v-card-title class="d-flex align-start" style="justify-content: start; position: relative; min-height: 40px;">
             <span style="font-weight:500;">Search Transaction</span>
-            <v-btn icon color="error" @click="showSearch = false" size="x-small" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);min-width:28px;height:30px;"><v-icon size="16">mdi-close</v-icon></v-btn>
+            <v-btn icon color="error" @click="() => { showSearch = false; searchDisabled = false; searchQuery = '' }" size="x-small" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);min-width:28px;height:30px;"><v-icon size="16">mdi-close</v-icon></v-btn>
           </v-card-title>
           <v-form @submit.prevent="handleSearch" class="pa-4">
   <v-text-field
     v-model="searchQuery"
+    :disabled="searchDisabled"
     label="Input transaction receipt..."
     outlined
     density="comfortable"
