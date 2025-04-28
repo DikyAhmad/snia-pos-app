@@ -12,7 +12,7 @@
 </v-row>
     <v-row class="d-flex justify-center mx-auto">
       <v-col cols="12" lg="8">
-        <div style="max-height: calc(130vh - 300px); overflow-y:auto;">
+        <div style="max-height: calc(1300vh - 400px); overflow-y:auto;">
           <v-data-table
             :headers="headers"
             :items="products"

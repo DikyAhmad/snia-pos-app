@@ -75,7 +75,38 @@ const handleClearCart = () => {
 
 import jsPDF from 'jspdf'
 
-const checkout = () => {
+// Dialog state dan data pembayaran
+const showCheckoutDialog = ref(false)
+const paymentMethod = ref<'cash' | 'qris'>('cash')
+const paymentAmount = ref<number>(0)
+const paymentError = ref<string>('')
+
+const openCheckoutDialog = () => {
+  paymentMethod.value = 'cash'
+  paymentAmount.value = totalPrice.value
+  paymentError.value = ''
+  showCheckoutDialog.value = true
+}
+
+const handlePaymentInput = (val: string) => {
+  const num = parseInt(val.replace(/[^0-9]/g, ''), 10)
+  paymentAmount.value = isNaN(num) ? 0 : num
+}
+
+const handleCheckout = () => {
+  if (paymentMethod.value === 'cash' && paymentAmount.value < totalPrice.value) {
+    paymentError.value = 'Jumlah pembayaran kurang dari total belanja.'
+    return
+  }
+  if (paymentMethod.value === 'qris') {
+    paymentAmount.value = totalPrice.value
+  }
+  showCheckoutDialog.value = false
+  paymentError.value = ''
+  generateReceiptPDF()
+}
+
+const generateReceiptPDF = () => {
   const doc = new jsPDF({ unit: 'mm', format: 'a5' })
   let y = 15
   doc.setFontSize(22)
@@ -121,19 +152,16 @@ const checkout = () => {
   y += 2
   doc.line(10, y, 140, y)
   y += 10
-  doc.text('Sub Total', 80, y)
-  doc.text('Rp ' + totalPrice.value.toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
-  y += 6
   doc.setFont('helvetica', 'bold')
   doc.text('Total', 80, y)
   doc.text('Rp ' + totalPrice.value.toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
   doc.setFont('helvetica', 'normal')
   y += 6
-  doc.text('Bayar (Cash)', 80, y)
-  doc.text('Rp ' + totalPrice.value.toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
+  doc.text('Bayar (' + (paymentMethod.value === 'cash' ? 'Cash' : 'QRIS') + ')', 80, y)
+  doc.text('Rp ' + paymentAmount.value.toLocaleString('id-ID'), 125, y, { align: 'right', maxWidth: 35 })
   y += 6
   doc.text('Kembali', 80, y)
-  doc.text('Rp 0', 125 , y, { align: 'right', maxWidth: 35 })
+  doc.text('Rp ' + (paymentAmount.value - totalPrice.value).toLocaleString('id-ID'), 125 , y, { align: 'right', maxWidth: 35 })
   y += 10
   doc.setFontSize(12)
   y += 10
@@ -142,6 +170,7 @@ const checkout = () => {
   doc.setFontSize(10)
   doc.save(`struk-${pad(now.getSeconds())}${pad(now.getMinutes())}${pad(now.getHours())}${pad(now.getDate())}${pad(now.getMonth())}${pad(now.getFullYear())}.pdf`)
 }
+
 
 
 </script>
@@ -246,7 +275,7 @@ const checkout = () => {
       <div>
         <v-btn 
           color="primary"
-          @click="checkout"
+          @click="openCheckoutDialog"
         >
           Checkout
         </v-btn>
@@ -279,6 +308,44 @@ const checkout = () => {
           >
             Delete
           </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+      <!-- Dialog Checkout -->
+    <v-dialog v-model="showCheckoutDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h6 text-center">Checkout</v-card-title>
+        <v-card-text>
+          <v-radio-group v-model="paymentMethod" row>
+            <v-radio label="Cash" value="cash" />
+            <v-radio label="QRIS" value="qris" />
+          </v-radio-group>
+
+          <div class="my-2">Jumlah Bayar:</div>
+          <v-text-field
+            v-model="paymentAmount"
+            type="number"
+            min="0"
+            :rules="[v => v >= totalPrice || 'Jumlah harus >= total']"
+            @input="handlePaymentInput($event.target.value)"
+            prepend-inner-icon="mdi-calculator"
+            placeholder="Masukkan jumlah bayar"
+            hide-details="auto"
+            :disabled="paymentMethod === 'qris'"
+          />
+          <div v-if="paymentError" class="red--text text-caption">{{ paymentError }}</div>
+          <div class="d-flex justify-space-between mt-2">
+            <span>Total: </span>
+            <span>Rp {{ totalPrice.toLocaleString() }}</span>
+          </div>
+          <div class="d-flex justify-space-between mt-1">
+            <span>Kembali: </span>
+            <span>Rp {{ paymentMethod === 'qris' ? 0 : (paymentAmount - totalPrice).toLocaleString() }}</span>
+          </div>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn text @click="showCheckoutDialog = false">Batal</v-btn>
+          <v-btn color="primary" @click="handleCheckout">Bayar & Cetak</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
