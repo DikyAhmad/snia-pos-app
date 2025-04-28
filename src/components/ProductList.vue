@@ -3,10 +3,13 @@ import { ref, onMounted, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useProductStore } from '@/stores/product'
 import { storeToRefs } from 'pinia'
+import { useLocale } from '@/composables/useLocale'
 
 const cartStore = useCartStore()
 const productStore = useProductStore()
 const { products, loading, error } = storeToRefs(productStore)
+
+const { t } = useLocale()
 
 const categories = ['Album', 'Bingkai', 'Cetak Foto Glossy', 'Cetak Foto Silky']
 const selectedCategory = ref('Cetak Foto Glossy')
@@ -34,7 +37,7 @@ onMounted(() => {
         <v-select
           v-model="selectedCategory"
           :items="categories"
-          label="Category"
+          :label="t('category')"
           variant="outlined"
           density="comfortable"
           class="category-select"
@@ -61,7 +64,7 @@ onMounted(() => {
     <v-row v-else-if="products.length === 0">
       <v-col class="text-center">
         <v-alert type="info">
-          No products found
+          {{ t('no_products') }}
         </v-alert>
       </v-col>
     </v-row>
