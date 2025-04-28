@@ -3,7 +3,30 @@ import { defineStore } from 'pinia'
 import type { Product } from '@/types/product'
 
 export const useCartStore = defineStore('cart', () => {
+  const STORAGE_KEY = 'snia-pos-cart-v1'
   const items = ref<{product: Product, quantity: number}[]>([])
+
+  // Load cart from localStorage saat store diinisialisasi
+  const loadCart = () => {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) {
+          items.value = parsed
+        }
+      } catch (e) {
+        // ignore error
+      }
+    }
+  }
+  loadCart()
+
+  // Simpan ke localStorage setiap kali items berubah
+  const saveCart = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value))
+  }
+
 
   const totalItems = computed(() => 
     items.value.reduce((total, item) => total + item.quantity, 0)
@@ -23,6 +46,7 @@ export const useCartStore = defineStore('cart', () => {
       items.value.push({ product, quantity: 1 })
     }
     updateTotalItems()
+    saveCart()
   }
 
   function removeFromCart(productId: number) {
@@ -40,6 +64,7 @@ export const useCartStore = defineStore('cart', () => {
   function clearCart() {
     items.value = []
     updateTotalItems()
+    saveCart()
   }
 
   function updateItemQuantity(productId: number, quantity: number) {
@@ -51,6 +76,7 @@ export const useCartStore = defineStore('cart', () => {
       // Update the quantity of the existing item
       items.value[existingItemIndex].quantity = quantity
       updateTotalItems()
+      saveCart()
     }
   }
 
