@@ -34,21 +34,7 @@ onMounted(() => {
       @return-home="returnHome" 
     />
     <v-main class="overflow-hidden">
-      <template v-if="route.path === '/login' || route.path === '/edit'">
-        <router-view />
-      </template>
-      <template v-else>
-        <v-container fluid class="pa-2">
-          <v-row v-if="!isCartView">
-            <ProductList />
-          </v-row>
-          <v-row v-else >
-            <v-col cols="12" sm="12" md="12" lg="8" class="mx-auto">
-              <CartView />
-            </v-col>
-          </v-row>
-        </v-container>
-      </template>
+      <router-view />
     </v-main>
   </v-app>
 </template>

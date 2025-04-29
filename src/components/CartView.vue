@@ -260,6 +260,13 @@ const generateReceiptPDF = async () => {
   const pdfBlob = doc.output('blob')
   return { blob: pdfBlob, filename, doc }
 }
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+function goToLogin() {
+  showAuthWarningDialog.value = false
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -272,7 +279,8 @@ const generateReceiptPDF = async () => {
         </v-alert>
       </v-card-text>
       <v-card-actions class="mx-4 mb-4">
-        <v-btn color="primary" @click="showAuthWarningDialog = false" class="">{{ t('close') }}</v-btn>
+        <v-btn color="secondary" @click="goToLogin" class="mr-2">{{ t('login') }}</v-btn>
+        <v-btn color="primary" @click="showAuthWarningDialog = false">{{ t('close') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

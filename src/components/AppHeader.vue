@@ -12,8 +12,7 @@ const { totalItems } = storeToRefs(cartStore)
 const router = useRouter()
 
 const handleCartClick = () => {
-  router.push('/')
-  emit('toggle-cart')
+  router.push('/cart')
 }
 
 const handleTitleClick = () => {
