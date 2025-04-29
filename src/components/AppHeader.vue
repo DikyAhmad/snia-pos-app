@@ -5,8 +5,6 @@ import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-const emit = defineEmits(['toggle-cart', 'return-home'])
-
 const cartStore = useCartStore()
 const { totalItems } = storeToRefs(cartStore)
 const router = useRouter()
@@ -17,7 +15,6 @@ const handleCartClick = () => {
 
 const handleTitleClick = () => {
   router.push('/')
-  emit('return-home')
 }
 
 import { supabase } from '@/lib/supabase'
@@ -45,7 +42,7 @@ const goToLogin = async () => {
       class="v-app-bar-title"
       @click="handleTitleClick"
     >
-      SNIA POS App
+      SNIA POS
     </v-app-bar-title>
     
     <Popover class="relativ mr-4">
