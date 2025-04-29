@@ -1,33 +1,92 @@
-# .
+# SNIA POS App
 
-This template should help get you started developing with Vue 3 in Vite.
+A modern, responsive Point of Sale (POS) web application for photo studios, built with Vue 3, TypeScript, Pinia, Vue Router, Vuetify, and Supabase.
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## ✨ Features
 
-## Type Support for `.vue` Imports in TS
+- **Product Catalog:**
+  - Browse and filter a list of photo products by category
+  - Add products to a shopping cart
+- **Cart Management:**
+  - View, update, and remove items from the cart
+  - Real-time cart total calculation
+- **Authentication:**
+  - Login system for admin access (with Supabase)
+- **Checkout & Receipt:**
+  - Checkout process with payment options
+  - Generate PDF receipts with QR code
+- **Admin Panel:**
+  - (Optional) Manage products and view sales (extendable)
+- **Responsive Design:**
+  - Fully mobile-friendly and desktop-ready UI with Vuetify
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+---
 
-## Customize configuration
+## 🛠️ Tech Stack
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- **Vue 3** + **TypeScript**
+- **Vuetify** (Material Design UI)
+- **Pinia** (state management)
+- **Vue Router** (routing)
+- **Supabase** (database & authentication)
+- **Vite** (build tool)
+- **pnpm** (package manager)
 
-## Project Setup
+---
 
-```sh
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/dikyahmad/snia-pos-app.git
+cd snia-pos-app
+```
+
+### 2. Install Dependencies
+```bash
 pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+### 3. Configure Environment
+- Copy `.env.example` to `.env` and fill in your Supabase credentials.
 
-```sh
+### 4. Run the App in Development
+```bash
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+The app will be available at [http://localhost:5173](http://localhost:5173).
 
-```sh
+### 5. Build for Production
+```bash
 pnpm build
 ```
+
+---
+
+## 📦 Folder Structure
+
+- `src/components/` — Reusable UI components (ProductList, CartView, AppHeader, etc)
+- `src/pages/` — Page-level views (Homepage, Login)
+- `src/stores/` — Pinia stores (cart, product, adminPanel)
+- `src/lib/` — Supabase client config
+- `src/router.ts` — Vue Router setup
+
+---
+
+## 💡 Customization & Extensibility
+- Add new product categories via Supabase
+- Extend the admin panel for sales analytics
+- Customize the UI with Vuetify themes
+
+---
+
+## 🙌 Credits
+Developed by [dikyahmad](https://github.com/dikyahmad)
+
+---
+
+## 📝 License
+MIT
